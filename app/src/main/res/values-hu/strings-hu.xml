@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">PartyKalauz</string>
+    <string name="action_settings">Beállítások</string>
+    <string name="title_activity_event_view">Esemény Nézet</string>
+    <string name="title_activity_calendar_view">Válassz dátumot</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_event_map">Esemény Térkép</string>
+    <string name="event_attending">résztvevő</string>
+    <string name="current_place">Jelenlegi pozíció</string>
+</resources>

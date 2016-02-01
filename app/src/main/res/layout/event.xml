@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="@dimen/event_heigth"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/back_image"
+        android:background="#0090ff" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventPlace"
+        android:layout_alignLeft="@id/back_image"
+        android:layout_alignTop="@id/back_image"
+        android:allowUndo="true"
+        android:autoText="false"
+        android:text="Owner"
+        android:textColor="#ffffff"
+        android:textSize="24dp"
+        android:background="#c9000000"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventAttend"
+        android:textColor="#ffffff"
+        android:text="220"
+        android:background="#cd000000"
+        android:textSize="18dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/eventDate"
+        android:layout_toEndOf="@+id/eventDate" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textAttending"
+        android:textColor="#ffffff"
+        android:text="attending"
+        android:background="#cd000000"
+        android:textSize="18dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/eventAttend"
+        android:layout_toEndOf="@+id/eventAttend" />
+
+    <RelativeLayout
+
+        android:layout_height="60dp"
+        android:layout_width="60dp"
+        android:id="@+id/eventDate"
+        android:layout_below="@+id/eventPlace"
+        android:textColor="#ffe100"
+        android:background="@drawable/datecard"
+        android:layout_margin="10dp"
+        android:longClickable="true"
+        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="7dp">
+        <TextView
+            android:id="@+id/eventMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="nov."
+            android:textSize="18dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="#ff6f00"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/eventDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="31"
+            android:textSize="20dp"
+            android:layout_below="@+id/eventMonth"
+            android:layout_centerHorizontal="true"
+            android:textColor="#ffffff"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
