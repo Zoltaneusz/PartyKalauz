@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <TextView
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/filterDistance"
+        android:text="Distance [km]"
+        android:textSize="25sp"
+        android:singleLine="true"
+        android:textAlignment="textEnd"
+        android:contextClickable="true"
+        android:paddingTop="10dp"
+        android:textColor="#ffffff"/>
+
+    <EditText
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/filteredDistance"
+        android:textSize="25sp"
+        android:text="40"
+        android:textColor="#ffffff"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/filterDistance"
+        android:layout_toEndOf="@+id/filterDistance"
+        android:layout_marginLeft="49dp"
+        android:layout_marginStart="49dp" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar"
+        android:layout_below="@+id/filteredDistance"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:max="1000"
+        android:progress="500"
+        android:indeterminate="false" />
+
+    <TextView
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/filterDate"
+        android:text="Datum"
+        android:textSize="25sp"
+        android:singleLine="true"
+        android:textAlignment="textEnd"
+        android:contextClickable="true"
+        android:paddingTop="10dp"
+        android:layout_below="@+id/seekBar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:textColor="#ffffff" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:ems="10"
+        android:id="@+id/filteredDate"
+        android:textColor="#ffffff"
+        android:layout_alignTop="@+id/filterDate"
+        android:layout_alignLeft="@+id/filteredName"
+        android:layout_alignStart="@+id/filteredName" />
+
+    <TextView
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/filterName"
+        android:text="Place Name"
+        android:textSize="25sp"
+        android:singleLine="true"
+        android:textAlignment="textEnd"
+        android:contextClickable="true"
+        android:paddingTop="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/filteredDate"
+        android:textColor="#ffffff" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/filteredName"
+        android:textColor="#ffffff"
+        android:text="Kraft"
+        android:textSize="25dp"
+        android:layout_alignTop="@+id/filterName"
+        android:layout_alignLeft="@+id/filteredDistance"
+        android:layout_alignStart="@+id/filteredDistance" />
+
+
+</RelativeLayout>

@@ -51,6 +51,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="partykalauz.hu.partykalauz.PartyKalauz" />
         </activity>
+        <activity
+            android:name=".EventFilters"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_filter_options"
+            android:parentActivityName=".PartyKalauz"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="partykalauz.hu.partykalauz.PartyKalauz" />
+        </activity>
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.

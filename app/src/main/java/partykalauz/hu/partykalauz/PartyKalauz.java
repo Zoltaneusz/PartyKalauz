@@ -25,11 +25,13 @@ import android.widget.ListView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -44,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 //List view: event.xml
-public class PartyKalauz extends AppCompatActivity {
+public class PartyKalauz extends AppCompatActivity implements LocationListener{
 
     ListView list;
     Context context = this;
@@ -55,7 +57,11 @@ public class PartyKalauz extends AppCompatActivity {
     FloatingActionButton fabMap;
     double lat = 47.504292;
     double lng = 19.058779;
+    private GoogleApiClient client;
+    boolean mapPermissionGiven = false;
     final int PERMISSION_COARSE = 0;
+    int selectedDistance = 40;
+    String selectedName;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -75,14 +81,23 @@ public class PartyKalauz extends AppCompatActivity {
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
         //========================================================================================
 
+        /**
+         Clicking the Settings button (fab) sends the user to the Settings Activity, where he can
+         set filters for the events.
+         Clicking the Map button (fabMap) sends the user to the Google Maps Activity.
+         Clicking on an event opens the EventView activity, that shows the Facebook pate of
+         the event in a Webview.
+         **/
+        //========================================================================================
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent calendarViewIntent = new Intent(context, CalendarActivity.class);
-                startActivity(calendarViewIntent);
+                Intent eventFilterIntent = new Intent(context, EventFilters.class);
+                startActivity(eventFilterIntent);
             }
         });
+        //========================================================================================
         fabMap = (FloatingActionButton) findViewById(R.id.fabMap);
         fabMap.hide();
         fabMap.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +111,7 @@ public class PartyKalauz extends AppCompatActivity {
                 startActivity(mapViewIntent);
             }
         });
+        //========================================================================================
 
         list = (ListView) findViewById(R.id.events);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -112,14 +128,20 @@ public class PartyKalauz extends AppCompatActivity {
         });
         populateListView();
     }
-
+        //========================================================================================
+    /*
+    Method onNewIntent gets called after returning from CalendarActivity. It uses the user chosen
+    date and collects the events on that date.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         Date selectedDate = new Date();
         selectedDate.setTime(intent.getLongExtra("DATE", -1));
-        getEventsForDate(selectedDate);
+        selectedDistance = intent.getIntExtra("DISTANCE", -1);
+        selectedName = intent.getStringExtra("NAME");
+        getEventsForFilters(selectedDate, selectedDistance, selectedName);
         //================================= Analytics ============================================
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("platform", "Android");
@@ -127,14 +149,59 @@ public class PartyKalauz extends AppCompatActivity {
         //========================================================================================
     }
 
-    private void getEventsForDate(Date selectedDate){
+    /**
+     * Collects the events for a date specified in parameter.
+     * @param selectedDate - the selected date for the events
+     * @param selectedDistance - the selected maximum distance for the events
+     * @param selectedName - the selected place for the events
+     */
+    private void getEventsForFilters(Date selectedDate, int selectedDistance, String selectedName){
         list.setAdapter(null);
         searchedForADate = true;
         Date nextDay = new Date();
-        nextDay.setTime(selectedDate.getTime()+86400000);
+        nextDay.setTime(selectedDate.getTime() + 86400000);
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.whereGreaterThanOrEqualTo("event_date", selectedDate);
         query.whereLessThan("event_date", nextDay);
+        query.whereContains("event_location", selectedName);
+
+        /*
+        Next block is used for getting the last known location of the user. Copied from EventMap...
+        Should be made cleaner and avoid code duplication...
+        */
+        //========================================================================================
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        // Get the location manager
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 400, 1000, (LocationListener) this);
+        // Define the criteria how to select the location provider -> use
+        // default
+        Criteria criteria = new Criteria();
+        provider = locationManager.getBestProvider(criteria, false);
+        if (ActivityCompat.checkSelfPermission(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Toast.makeText(EventMap.this, "", Toast.LENGTH_SHORT).show(); //Explanation to the user
+            }
+            else{
+                //This is where we request the user the permission
+                ActivityCompat.requestPermissions(PartyKalauz.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSION_COARSE);
+            }
+
+            return;
+        }
+        else {
+            mapPermissionGiven = true;
+        }
+        Location currentLatLngLocation = locationManager.getLastKnownLocation(provider);
+        //=======================================================================================
+        ParseGeoPoint currentLocation = new ParseGeoPoint();
+        currentLocation.setLatitude(currentLatLngLocation.getLatitude());
+        currentLocation.setLongitude(currentLatLngLocation.getLongitude());
+        query.whereWithinKilometers("event_coordinates", currentLocation, selectedDistance);
         query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> eventList, ParseException e) {
@@ -160,6 +227,10 @@ public class PartyKalauz extends AppCompatActivity {
         });
 
     }
+
+    /**
+     * Collects all events.
+     */
     private void populateListView() {
         searchedForADate = false;
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
@@ -198,6 +269,9 @@ public class PartyKalauz extends AppCompatActivity {
 
     }
 
+    /**
+     * Overriding onBackPressed is necessary to get back all events and deleting all filters.
+     */
     @Override
     public void onBackPressed() {
 
@@ -209,6 +283,27 @@ public class PartyKalauz extends AppCompatActivity {
         else
             super.onBackPressed();
 
+
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
 
     }
 }

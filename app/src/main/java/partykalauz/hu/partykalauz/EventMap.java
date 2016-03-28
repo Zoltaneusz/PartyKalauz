@@ -81,7 +81,6 @@ public class EventMap extends FragmentActivity implements OnMapReadyCallback, Lo
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
         // Get the location manager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 400, 1000, (LocationListener) this);

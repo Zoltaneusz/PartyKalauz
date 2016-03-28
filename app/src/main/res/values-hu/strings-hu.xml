@@ -8,4 +8,5 @@
     <string name="title_activity_event_map">Esemény Térkép</string>
     <string name="event_attending">résztvevő</string>
     <string name="current_place">Jelenlegi pozíció</string>
+    <string name="title_filter_options">Szűrőbeállítások</string>
 </resources>

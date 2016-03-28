@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_dialer"
+        android:src="@mipmap/ic_settings_white_48dp"
         android:adjustViewBounds="true"
         app:backgroundTint="#40a0e9" />
 
