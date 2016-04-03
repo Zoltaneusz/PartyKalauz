@@ -49,7 +49,7 @@ public class CalendarActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
-                Intent parentIntent = new Intent(CalendarActivity.this, PartyKalauz.class);
+                Intent parentIntent = new Intent(CalendarActivity.this, EventFilters.class);
                 parentIntent.putExtra("DATE", calendarView.getDate());
                 startActivity(parentIntent);
             }

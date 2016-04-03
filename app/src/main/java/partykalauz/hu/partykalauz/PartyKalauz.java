@@ -132,6 +132,9 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
     /*
     Method onNewIntent gets called after returning from CalendarActivity. It uses the user chosen
     date and collects the events on that date.
+
+    !!! Handle case when the user returns from EventMap or EventView !!!
+
      */
     @Override
     protected void onNewIntent(Intent intent) {
@@ -162,8 +165,8 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         nextDay.setTime(selectedDate.getTime() + 86400000);
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.whereGreaterThanOrEqualTo("event_date", selectedDate);
-        query.whereLessThan("event_date", nextDay);
-        query.whereContains("event_location", selectedName);
+        query.whereLessThan("event_date", nextDay); // Filter for events that are on the user chosen day
+        //query.whereContains("event_location", selectedName);  // Filter for events that include the user chosen name
 
         /*
         Next block is used for getting the last known location of the user. Copied from EventMap...
@@ -177,7 +180,7 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         // Define the criteria how to select the location provider -> use
         // default
         Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
+        provider = locationManager.getBestProvider(criteria, true);
         if (ActivityCompat.checkSelfPermission(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -201,7 +204,7 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         ParseGeoPoint currentLocation = new ParseGeoPoint();
         currentLocation.setLatitude(currentLatLngLocation.getLatitude());
         currentLocation.setLongitude(currentLatLngLocation.getLongitude());
-        query.whereWithinKilometers("event_coordinates", currentLocation, selectedDistance);
+        query.whereWithinKilometers("event_coordinates", currentLocation, selectedDistance); //Filter for events that the near to current user location
         query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> eventList, ParseException e) {
