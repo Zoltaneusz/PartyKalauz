@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -50,17 +51,29 @@ public class EventFilters extends AppCompatActivity{
 
         Intent intent = getIntent();
         selectedDate.setTime(intent.getLongExtra("DATE", new Date().getTime()));
+        seekDistance = intent.getIntExtra("DISTANCE", 40);
+
+        // When coming back from CalendarView or PartyKalauz the previously filtered distance should stay ==========
+        final EditText filteredEditDistance = (EditText) findViewById(R.id.filteredDistance);
+        filteredEditDistance.setText(String.valueOf(seekDistance));
+        final SeekBar filteredBarDistance = (SeekBar) findViewById(R.id.seekDistance);
+        filteredBarDistance.setProgress(seekDistance);
+        // =========================================================================================
+
         TextView filteredDate = (TextView) findViewById(R.id.filteredDate);
         //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         filteredDate.setText(dateFormat.format(selectedDate));
 
-        SeekBar filteredBarDistance = (SeekBar) findViewById(R.id.seekDistance);
+        /**
+         * When the user moves the seekDistance slide the value of filteredDistance (EditText) changes
+         * accordingly.
+         */
+
         filteredBarDistance.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                EditText setEditDistance = (EditText) findViewById(R.id.filteredDistance);
-                setEditDistance.setText(String.valueOf(progress));
+                filteredEditDistance.setText(String.valueOf(progress));
                 //seekDistance = seekBarDistance.getProgress();
                 seekDistance = progress;
             }
@@ -76,7 +89,11 @@ public class EventFilters extends AppCompatActivity{
             }
         });
 
-        final EditText filteredEditDistance = (EditText) findViewById(R.id.filteredDistance);
+        /**
+         * When the user changes the value of filteredDistance (EditText) the seekDistance slide
+         * changes accordingly.
+         */
+
         filteredEditDistance.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -85,13 +102,14 @@ public class EventFilters extends AppCompatActivity{
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().trim().length()==0){return;}
-                SeekBar seekBarDistance = (SeekBar) findViewById(R.id.seekDistance);
+                if (s.toString().trim().length() == 0) {
+                    return;
+                }
                 int bar = Integer.valueOf(String.valueOf(s));
-                if(bar < 1 || s == null)
+                if (bar < 1 || s == null)
                     bar = 1;
 
-                seekBarDistance.setProgress(bar);
+                filteredBarDistance.setProgress(bar);
                 seekDistance = bar;
 
             }
@@ -101,15 +119,46 @@ public class EventFilters extends AppCompatActivity{
                 filteredEditDistance.setSelection(String.valueOf(s).length());
             }
         });
-
+        /**
+         * Clicking the filteredDate (EditText) navigates the user to the CalendarActivity with
+         * the selected distance as an extra.
+         */
         filteredDate.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent eventDateIntent = new Intent(context, CalendarActivity.class);
+                eventDateIntent.putExtra("DISTANCE",seekDistance);
                 startActivity(eventDateIntent);
 
             }
         });
+
+        /**
+         * Writing into the filteredPlace (EditText) shows the user a dropdown list, that contain all
+         * places that start with the written letters.
+         */
+        final ListView listNames = (ListView) findViewById(R.id.filteredNameList);
+        listNames.setVisibility(listNames.INVISIBLE);
+        final EditText filteredPlace = (EditText) findViewById(R.id.filteredName);
+        filteredPlace.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                listNames.setVisibility(listNames.VISIBLE);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+        });
+
 
     }
 

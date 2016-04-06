@@ -108,5 +108,13 @@
         android:layout_alignLeft="@+id/filteredDistance"
         android:layout_alignStart="@+id/filteredDistance" />
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/filteredNameList"
+        android:layout_below="@+id/filteredName"
+        android:layout_alignLeft="@+id/filteredName"
+        android:layout_alignStart="@+id/filteredName" />
+
 
 </RelativeLayout>

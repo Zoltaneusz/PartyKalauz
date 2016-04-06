@@ -62,6 +62,7 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
     final int PERMISSION_COARSE = 0;
     int selectedDistance = 40;
     String selectedName;
+    Date selectedDate = new Date();
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -94,6 +95,8 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
             @Override
             public void onClick(View view) {
                 Intent eventFilterIntent = new Intent(context, EventFilters.class);
+                eventFilterIntent.putExtra("DISTANCE", selectedDistance);
+                eventFilterIntent.putExtra("DATE", selectedDate.getTime());
                 startActivity(eventFilterIntent);
             }
         });
@@ -140,7 +143,7 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        Date selectedDate = new Date();
+
         selectedDate.setTime(intent.getLongExtra("DATE", -1));
         selectedDistance = intent.getIntExtra("DISTANCE", -1);
         selectedName = intent.getStringExtra("NAME");
