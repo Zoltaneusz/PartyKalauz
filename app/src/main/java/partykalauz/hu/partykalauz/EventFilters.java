@@ -9,15 +9,25 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Zsombor on 2016.03.27..
@@ -27,6 +37,7 @@ public class EventFilters extends AppCompatActivity{
     int seekDistance = 20;
     int setDistance;
     Context context = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,8 +158,42 @@ public class EventFilters extends AppCompatActivity{
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, int start, int before, int count) {
                 listNames.setVisibility(listNames.VISIBLE);
+                //============= Filter and populate list of places =================================
+                final List<String> listNamesArray = new ArrayList<String>();
+                final String[] listNameItems = new String[1000];
+                //=============== Array of all places coming from previous activity ================
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
+                query.setLimit(1000);
+                query.addAscendingOrder("event_location");
+                query.whereContains("event_location", String.valueOf(s));
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    public void done(List<ParseObject> eventList, ParseException e) {
+
+                        if (e == null) {
+                            Log.d("score", "Retrieved " + eventList.size() + " events");
+                            int i = 0;
+                            for (ParseObject currentObject : eventList) {
+                                listNameItems[i] = (String) currentObject.get("event_location");
+
+                                i++;
+                            }
+                        } else {
+                            Log.d("score", "Error: " + e.getMessage());
+                        }
+                    }
+                });
+                for(int i=0; i<1000; i++)
+                {
+                    if (listNameItems[i].contains(s))
+                    listNamesArray.add(listNameItems[i]);
+                }
+
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        context, R.layout.placelist, R.id.list_places, listNamesArray);
+                listNames.setAdapter(arrayAdapter);
+                //==================================================================================
 
             }
 

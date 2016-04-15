@@ -102,7 +102,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/filteredName"
         android:textColor="#ffffff"
-        android:text="Kraft"
+        android:text="E"
         android:textSize="20sp"
         android:layout_alignTop="@+id/filterName"
         android:layout_alignLeft="@+id/filteredDistance"
@@ -114,7 +114,10 @@
         android:id="@+id/filteredNameList"
         android:layout_below="@+id/filteredName"
         android:layout_alignLeft="@+id/filteredName"
-        android:layout_alignStart="@+id/filteredName" />
+        android:layout_alignStart="@+id/filteredName"
+        android:background="#5c5c5c"
+        android:contextClickable="true"
+        android:footerDividersEnabled="true" />
 
 
 </RelativeLayout>
