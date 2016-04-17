@@ -9,7 +9,7 @@
     tools:showIn="@layout/activity_party_kalauz">
 
     <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
+        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
@@ -27,6 +27,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="No events found"
+        android:textColor="#40a0e9"
+        android:id="@+id/noEventsText"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
 
 
 </RelativeLayout>

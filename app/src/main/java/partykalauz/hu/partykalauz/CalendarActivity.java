@@ -33,6 +33,7 @@ public class CalendarActivity extends AppCompatActivity {
     Date initialDate;
     Date calendarDate;
     int seekDistance = 20;
+    String selectedName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class CalendarActivity extends AppCompatActivity {
                 Intent parentIntent = new Intent(CalendarActivity.this, EventFilters.class);
                 parentIntent.putExtra("DATE", calendarView.getDate());
                 parentIntent.putExtra("DISTANCE", seekDistance);
+                parentIntent.putExtra("NAME", selectedName);
                 startActivity(parentIntent);
             }
         });
@@ -134,6 +136,7 @@ public class CalendarActivity extends AppCompatActivity {
         super.onResume();
         Intent intent = getIntent();
         seekDistance = intent.getIntExtra("DISTANCE", 40);  // Mostly when coming from EventFilters
+        selectedName = intent.getStringExtra("NAME");
         //================================= Analytics ============================================
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("platform", "Android");

@@ -11,8 +11,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -36,7 +39,12 @@ public class EventFilters extends AppCompatActivity{
     Date selectedDate = new Date();
     int seekDistance = 20;
     int setDistance;
+    String selectedName;
     Context context = this;
+    int maxEvents = 1000;
+    String[] listNameItems = new String[maxEvents];
+    ListView listNames;
+    EditText filteredPlace;
 
 
     @Override
@@ -50,6 +58,29 @@ public class EventFilters extends AppCompatActivity{
         }
         actionBar.setTitle(R.string.title_activity_calendar_view);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+        ImageButton searchButton = (ImageButton) findViewById(R.id.searchButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent parentIntent = new Intent(EventFilters.this, PartyKalauz.class);
+                parentIntent.putExtra("DATE", selectedDate.getTime());
+                parentIntent.putExtra("DISTANCE", seekDistance);
+                parentIntent.putExtra("NAME", selectedName);
+                startActivity(parentIntent);
+            }
+        });
+        listNames = (ListView) findViewById(R.id.filteredNameList);
+        listNames.setVisibility(listNames.INVISIBLE);
+        filteredPlace = (EditText) findViewById(R.id.filteredName);
+        listNames.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedName = (String) listNames.getItemAtPosition(position);
+                filteredPlace.setText(selectedName);
+                filteredPlace.setSelection(selectedName.length());
+                listNames.setVisibility(listNames.INVISIBLE);
+            }
+        });
 
     }
 
@@ -63,6 +94,10 @@ public class EventFilters extends AppCompatActivity{
         Intent intent = getIntent();
         selectedDate.setTime(intent.getLongExtra("DATE", new Date().getTime()));
         seekDistance = intent.getIntExtra("DISTANCE", 40);
+        listNameItems = intent.getStringArrayExtra("PLACES");
+        selectedName = intent.getStringExtra("NAME");
+        filteredPlace.setText(selectedName);
+
 
         // When coming back from CalendarView or PartyKalauz the previously filtered distance should stay ==========
         final EditText filteredEditDistance = (EditText) findViewById(R.id.filteredDistance);
@@ -134,11 +169,12 @@ public class EventFilters extends AppCompatActivity{
          * Clicking the filteredDate (EditText) navigates the user to the CalendarActivity with
          * the selected distance as an extra.
          */
-        filteredDate.setOnClickListener(new View.OnClickListener(){
+        filteredDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent eventDateIntent = new Intent(context, CalendarActivity.class);
-                eventDateIntent.putExtra("DISTANCE",seekDistance);
+                eventDateIntent.putExtra("DISTANCE", seekDistance);
+                eventDateIntent.putExtra("NAME", selectedName);
                 startActivity(eventDateIntent);
 
             }
@@ -148,9 +184,9 @@ public class EventFilters extends AppCompatActivity{
          * Writing into the filteredPlace (EditText) shows the user a dropdown list, that contain all
          * places that start with the written letters.
          */
-        final ListView listNames = (ListView) findViewById(R.id.filteredNameList);
-        listNames.setVisibility(listNames.INVISIBLE);
-        final EditText filteredPlace = (EditText) findViewById(R.id.filteredName);
+
+
+
         filteredPlace.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -162,32 +198,15 @@ public class EventFilters extends AppCompatActivity{
                 listNames.setVisibility(listNames.VISIBLE);
                 //============= Filter and populate list of places =================================
                 final List<String> listNamesArray = new ArrayList<String>();
-                final String[] listNameItems = new String[1000];
+
                 //=============== Array of all places coming from previous activity ================
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
-                query.setLimit(1000);
-                query.addAscendingOrder("event_location");
-                query.whereContains("event_location", String.valueOf(s));
-                query.findInBackground(new FindCallback<ParseObject>() {
-                    public void done(List<ParseObject> eventList, ParseException e) {
 
-                        if (e == null) {
-                            Log.d("score", "Retrieved " + eventList.size() + " events");
-                            int i = 0;
-                            for (ParseObject currentObject : eventList) {
-                                listNameItems[i] = (String) currentObject.get("event_location");
-
-                                i++;
-                            }
-                        } else {
-                            Log.d("score", "Error: " + e.getMessage());
-                        }
-                    }
-                });
-                for(int i=0; i<1000; i++)
+                for(int i=0; i<listNameItems.length-1; i++)
                 {
-                    if (listNameItems[i].contains(s))
-                    listNamesArray.add(listNameItems[i]);
+                    if(listNameItems[i] != null){
+                        if (listNameItems[i].toLowerCase().contains(s))
+                            listNamesArray.add(listNameItems[i]);
+                    }
                 }
 
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
@@ -229,11 +248,7 @@ public class EventFilters extends AppCompatActivity{
     public void onBackPressed() {
         super.onBackPressed();
 
-        Intent parentIntent = new Intent(EventFilters.this, PartyKalauz.class);
-        parentIntent.putExtra("DATE", selectedDate.getTime());
-        parentIntent.putExtra("DISTANCE", seekDistance);
-        parentIntent.putExtra("NAME", "KRAFT");
-        startActivity(parentIntent);
+
 
     }
 }

@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -36,12 +39,17 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.w3c.dom.Text;
+
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -55,14 +63,18 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
     private LocationManager locationManager;
     private String provider;
     FloatingActionButton fabMap;
+    FloatingActionButton fabSettings;
     double lat = 47.504292;
     double lng = 19.058779;
     private GoogleApiClient client;
     boolean mapPermissionGiven = false;
     final int PERMISSION_COARSE = 0;
     int selectedDistance = 40;
-    String selectedName;
+    String selectedName = "Default";
+    int maxEvents = 1000;
+    ArrayList<String> allPlaces = new ArrayList<String>();
     Date selectedDate = new Date();
+    TextView noEventsText;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -90,13 +102,18 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
          the event in a Webview.
          **/
         //========================================================================================
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabSettings = (FloatingActionButton) findViewById(R.id.fab);
+        fabSettings.hide();
+        fabSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent eventFilterIntent = new Intent(context, EventFilters.class);
                 eventFilterIntent.putExtra("DISTANCE", selectedDistance);
                 eventFilterIntent.putExtra("DATE", selectedDate.getTime());
+                Collections.sort(allPlaces);
+                String[] allPlacesString = new String[allPlaces.size()];
+                allPlacesString = allPlaces.toArray(allPlacesString);
+                eventFilterIntent.putExtra("PLACES", allPlacesString);
                 startActivity(eventFilterIntent);
             }
         });
@@ -130,6 +147,9 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
             }
         });
         populateListView();
+        noEventsText = (TextView) findViewById(R.id.noEventsText);
+        noEventsText.setText(R.string.no_event_notify);
+        noEventsText.setVisibility(noEventsText.INVISIBLE);
     }
         //========================================================================================
     /*
@@ -143,11 +163,15 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
+        ProgressBar loadingCircle = (ProgressBar) findViewById(R.id.progressBar);
+        loadingCircle.setVisibility(loadingCircle.VISIBLE);
+        noEventsText.setVisibility(noEventsText.INVISIBLE);
 
         selectedDate.setTime(intent.getLongExtra("DATE", -1));
         selectedDistance = intent.getIntExtra("DISTANCE", -1);
         selectedName = intent.getStringExtra("NAME");
         getEventsForFilters(selectedDate, selectedDistance, selectedName);
+        loadingCircle.setVisibility(loadingCircle.INVISIBLE);
         //================================= Analytics ============================================
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("platform", "Android");
@@ -169,7 +193,8 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.whereGreaterThanOrEqualTo("event_date", selectedDate);
         query.whereLessThan("event_date", nextDay); // Filter for events that are on the user chosen day
-        //query.whereContains("event_location", selectedName);  // Filter for events that include the user chosen name
+        if(selectedName != null)
+            query.whereContains("event_location", selectedName);  // Filter for events that include the user chosen name
 
         /*
         Next block is used for getting the last known location of the user. Copied from EventMap...
@@ -202,13 +227,21 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         else {
             mapPermissionGiven = true;
         }
-        Location currentLatLngLocation = locationManager.getLastKnownLocation(provider);
-        //=======================================================================================
         ParseGeoPoint currentLocation = new ParseGeoPoint();
-        currentLocation.setLatitude(currentLatLngLocation.getLatitude());
-        currentLocation.setLongitude(currentLatLngLocation.getLongitude());
+
+        Location currentLatLngLocation = locationManager.getLastKnownLocation(provider); // This sometimes crashes, when called with provider = gps
+        try{
+            currentLocation.setLatitude(currentLatLngLocation.getLatitude());
+            currentLocation.setLongitude(currentLatLngLocation.getLongitude());
+        } catch (Exception e) {
+            currentLatLngLocation = locationManager.getLastKnownLocation("network"); // Network provider always works
+            currentLocation.setLatitude(currentLatLngLocation.getLatitude());
+            currentLocation.setLongitude(currentLatLngLocation.getLongitude());
+        }
+
+        //=======================================================================================
         query.whereWithinKilometers("event_coordinates", currentLocation, selectedDistance); //Filter for events that the near to current user location
-        query.setLimit(1000);
+        query.setLimit(maxEvents);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> eventList, ParseException e) {
                 Event[] myItems = new Event[eventList.size()];
@@ -225,6 +258,8 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
                     currentEvents = myItems;
                     EventAdapter adapter = new EventAdapter(context, myItems);
                     list.setAdapter(adapter);
+                    if(myItems == null)
+                        noEventsText.setVisibility(noEventsText.VISIBLE);
 
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
@@ -241,7 +276,7 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         searchedForADate = false;
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.whereGreaterThanOrEqualTo("event_date", new Date());
-        query.setLimit(1000);
+        query.setLimit(maxEvents);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> eventList, ParseException e) {
                 Event[] myItems = new Event[eventList.size()];
@@ -250,10 +285,15 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
                     int i = 0;
                     for (ParseObject currentObject : eventList) {
                         Event event = new Event(currentObject);
+                        if (currentObject.get("event_location") != null){
+                            if (allPlaces.contains((String) currentObject.get("event_location")) == false)
+                                allPlaces.add((String) currentObject.get("event_location"));
+                        }
                         myItems[i] = event;
                         i++;
                     }
                     fabMap.show();
+                    fabSettings.show();
                     // Arrays.sort(myItems,Event.compareAttendees);
                     Arrays.sort(myItems, Event.EventComparator.decending(Event.EventComparator.getComparator(Event.EventComparator.DATE_SORT, Event.EventComparator.ATTENDEES_SORT)));
                     currentEvents = myItems;
