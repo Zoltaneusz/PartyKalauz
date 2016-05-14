@@ -8,15 +8,7 @@
     tools:context="partykalauz.hu.partykalauz.PartyKalauz"
     tools:showIn="@layout/activity_party_kalauz">
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="206dp"
-        android:indeterminateOnly="true"/>
+
 
     <ListView
         android:layout_width="match_parent"
@@ -25,7 +17,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#4c4c4c" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -37,6 +30,17 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="206dp"
+        android:indeterminateOnly="true"
+        android:foreground="#d80000" />
 
 
 </RelativeLayout>

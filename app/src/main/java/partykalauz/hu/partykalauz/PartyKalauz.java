@@ -24,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -209,23 +210,29 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
         // default
         Criteria criteria = new Criteria();
         provider = locationManager.getBestProvider(criteria, true);
-        if (ActivityCompat.checkSelfPermission(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                // Toast.makeText(EventMap.this, "", Toast.LENGTH_SHORT).show(); //Explanation to the user
+        int permissionCheck = ActivityCompat.checkSelfPermission(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED){
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                //    Toast.makeText(PartyKalauz.this, "Helyzetmeghatározás", Toast.LENGTH_SHORT).show(); //Explanation to the user
+                ActivityCompat.requestPermissions(PartyKalauz.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSION_COARSE);
             }
             else{
                 //This is where we request the user the permission
                 ActivityCompat.requestPermissions(PartyKalauz.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSION_COARSE);
+                }
             }
-
-            return;
-        }
         else {
-            mapPermissionGiven = true;
+            ActivityCompat.requestPermissions(PartyKalauz.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_COARSE);
+       //     mapPermissionGiven = true;
         }
         ParseGeoPoint currentLocation = new ParseGeoPoint();
 
@@ -258,7 +265,7 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
                     currentEvents = myItems;
                     EventAdapter adapter = new EventAdapter(context, myItems);
                     list.setAdapter(adapter);
-                    if(myItems == null)
+                    if(adapter.isEmpty() == true)
                         noEventsText.setVisibility(noEventsText.VISIBLE);
 
                 } else {
@@ -351,5 +358,21 @@ public class PartyKalauz extends AppCompatActivity implements LocationListener{
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            String permissions[],
+            int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_COARSE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(PartyKalauz.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(PartyKalauz.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                }
+        }
     }
 }
