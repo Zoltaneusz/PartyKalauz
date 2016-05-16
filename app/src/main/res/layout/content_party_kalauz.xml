@@ -9,7 +9,6 @@
     tools:showIn="@layout/activity_party_kalauz">
 
 
-
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,6 +18,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:background="#4c4c4c" />
+
+    <ProgressBar android:indeterminateDrawable="@drawable/glassprogressbar"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
+        android:id="@+id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,17 +37,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp" />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="206dp"
-        android:indeterminateOnly="true"
-        android:foreground="#d80000" />
 
 
 </RelativeLayout>

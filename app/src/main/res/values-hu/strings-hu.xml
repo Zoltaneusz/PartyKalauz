@@ -9,5 +9,8 @@
     <string name="event_attending">résztvevő</string>
     <string name="current_place">Jelenlegi pozíció</string>
     <string name="title_filter_options">Szűrőbeállítások</string>
-    <string name="no_event_notify">Nem talált bulit</string>
+    <string name="no_event_notify">Nincs találat</string>
+    <string name="gps_network_not_enabled">Helyzet nincs engedélyezve</string>
+    <string name="open_location_settings">Helyzetbeállítások megnyitása</string>
+    <string name="Cancel">Mégse</string>
 </resources>

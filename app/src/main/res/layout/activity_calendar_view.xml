@@ -20,10 +20,9 @@
         android:id="@+id/searchButton"
         android:layout_gravity="bottom|center"
         android:layout_weight="0.07"
-        android:src="@android:drawable/ic_menu_search"
+        android:src="@mipmap/ic_check_circle_white_48dp"
         style="@style/Base.Widget.AppCompat.ImageButton"
         android:baseline="@dimen/abc_action_button_min_width_overflow_material"
         android:cropToPadding="false"
-        android:background="@drawable/datecard"
-        android:backgroundTint="#ffe600" />
+        android:background="@drawable/datecard" />
 </partykalauz.hu.partykalauz.CalendarViewScrollable>

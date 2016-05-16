@@ -10,4 +10,7 @@
     <string name="current_place">Current location</string>
     <string name="title_filter_options">Filter options</string>
     <string name="no_event_notify">No parties found</string>
+    <string name="gps_network_not_enabled">Location not enabled</string>
+    <string name="open_location_settings">Open location settings</string>
+    <string name="Cancel">Cancel</string>
 </resources>

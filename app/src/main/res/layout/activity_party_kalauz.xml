@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/ic_settings_white_48dp"
+        android:src="@mipmap/ic_filter_list_white_48dp"
         android:adjustViewBounds="true"
         app:backgroundTint="#40a0e9" />
 
@@ -43,9 +43,10 @@
         android:layout_marginBottom="85dp"
         android:src="@android:drawable/ic_dialog_map"
         android:adjustViewBounds="true"
-        app:backgroundTint="#FFF21616"
+        app:backgroundTint="#40a0e9"
         android:layout_gravity="bottom|end"
-        android:baselineAlignBottom="false" />
+        android:baselineAlignBottom="false"
+        android:focusableInTouchMode="true" />
 
 
 </android.support.design.widget.CoordinatorLayout>
