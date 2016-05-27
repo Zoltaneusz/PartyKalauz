@@ -376,6 +376,8 @@ public class PartyKalauz extends AppCompatActivity implements
     public void onBackPressed() {
 
         if (searchedForADate) {
+            ProgressBar loadingCircle = (ProgressBar) findViewById(R.id.progressBar);
+            loadingCircle.setVisibility(loadingCircle.VISIBLE);
             list.setAdapter(null);
             populateListView();
         } else
