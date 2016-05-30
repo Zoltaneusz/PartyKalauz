@@ -13,4 +13,7 @@
     <string name="gps_network_not_enabled">Location not enabled</string>
     <string name="open_location_settings">Open location settings</string>
     <string name="Cancel">Cancel</string>
+    <string name="layoutPlace">Place</string>
+    <string name="layoutDistance">Distance</string>
+    <string name="layoutDate">Date</string>
 </resources>

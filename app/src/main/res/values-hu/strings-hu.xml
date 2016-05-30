@@ -13,4 +13,7 @@
     <string name="gps_network_not_enabled">Helyzet nincs engedélyezve</string>
     <string name="open_location_settings">Helyzetbeállítások megnyitása</string>
     <string name="Cancel">Mégse</string>
+    <string name="layoutPlace">Hely</string>
+    <string name="layoutDistance">Távolság</string>
+    <string name="layoutDate">Dátum</string>
 </resources>

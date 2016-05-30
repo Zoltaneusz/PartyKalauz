@@ -5,6 +5,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -45,12 +51,14 @@ public class EventFilters extends AppCompatActivity{
     String[] listNameItems = new String[maxEvents];
     ListView listNames;
     EditText filteredPlace;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_event_filter);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -58,6 +66,17 @@ public class EventFilters extends AppCompatActivity{
         }
         actionBar.setTitle(R.string.title_activity_calendar_view);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+
+        //==================== Creating tabs here =================================================
+
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        //=========================================================================================
+
         ImageButton searchButton = (ImageButton) findViewById(R.id.searchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +103,42 @@ public class EventFilters extends AppCompatActivity{
 
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new FilterDistanceFrag(), getString(R.string.layoutDistance));
+        adapter.addFragment(new FilterDateFrag(), getString(R.string.layoutDate));
+        adapter.addFragment(new FilterPlaceFrag(), getString(R.string.layoutPlace));
+        viewPager.setAdapter(adapter);
+    }
 
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
 
     @Override
     protected void onResume() {

@@ -1,141 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="150dp"
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/filterDistance"
-        android:text="Távolság [km]"
-        android:textSize="20sp"
-        android:singleLine="true"
-        android:textAlignment="textEnd"
-        android:contextClickable="true"
-        android:paddingTop="10dp"
-        android:textColor="#ffffff"
-        android:layout_alignParentTop="true" />
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <EditText
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/filteredDistance"
-        android:textSize="20sp"
-        android:text="40"
-        android:textColor="#ffffff"
-        android:maxLength="3"
-        android:layout_marginLeft="23dp"
-        android:layout_marginStart="23dp"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/filterDistance"
-        android:layout_toEndOf="@+id/filterDistance" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <SeekBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekDistance"
-        android:layout_below="@+id/filteredDistance"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:max="500"
-        android:progress="50"
-        android:indeterminate="false" />
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="fixed"
+            app:tabGravity="fill"/>
+    </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:layout_width="195dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/filterDate"
-        android:text="Dátum"
-        android:textSize="20sp"
-        android:singleLine="true"
-        android:textAlignment="textEnd"
-        android:contextClickable="true"
-        android:paddingTop="0dp"
-        android:layout_marginTop="30dp"
-        android:textColor="#ffffff"
-        android:layout_below="@+id/seekDistance"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/filterDistance"
-        android:layout_alignEnd="@+id/filterDistance" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:clickable="true"
-        android:inputType="date"
-        android:ems="10"
-        android:textSize="20sp"
-        android:id="@+id/filteredDate"
-        android:textColor="#ffffff"
-        android:text="2016.04.03."
-        android:layout_alignBottom="@+id/filterDate"
-        android:layout_alignLeft="@+id/filteredName"
-        android:layout_alignStart="@+id/filteredName" />
-
-    <TextView
-        android:layout_width="195dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/filterName"
-        android:text="Hely"
-        android:textSize="20sp"
-        android:singleLine="true"
-        android:textAlignment="textEnd"
-        android:contextClickable="true"
-        android:paddingTop="10dp"
-        android:layout_marginTop="30dp"
-        android:textColor="#ffffff"
-        android:layout_below="@+id/filteredDate"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/filteredDistance"
-        android:layout_toStartOf="@+id/filteredDistance" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/filteredName"
-        android:textColor="#ffffff"
-        android:text=""
-        android:textSize="20sp"
-        android:layout_alignTop="@+id/filterName"
-        android:layout_alignLeft="@+id/filteredDistance"
-        android:layout_alignStart="@+id/filteredDistance"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/filteredNameList"
-        android:layout_below="@+id/filteredName"
-        android:layout_alignLeft="@+id/filteredName"
-        android:layout_alignStart="@+id/filteredName"
-        android:background="#5c5c5c"
-        android:contextClickable="true"
-        android:footerDividersEnabled="true" />
-
-    <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/searchButton"
-        android:layout_gravity="bottom|center"
-        android:layout_weight="0.07"
-        android:src="@android:drawable/ic_menu_search"
-        style="@style/Base.Widget.AppCompat.ImageButton"
-        android:baseline="@dimen/abc_action_button_min_width_overflow_material"
-        android:cropToPadding="false"
-        android:background="@drawable/datecard"
-        android:backgroundTint="#ffe600"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/filterName"
-        android:layout_toEndOf="@+id/filterName" />
-
-
-</RelativeLayout>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+</android.support.design.widget.CoordinatorLayout>

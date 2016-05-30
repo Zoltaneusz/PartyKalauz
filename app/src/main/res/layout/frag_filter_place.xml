@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/filterName"
+        android:text="Hely"
+        android:textSize="20sp"
+        android:singleLine="true"
+        android:textAlignment="textEnd"
+        android:contextClickable="true"
+        android:paddingTop="10dp"
+        android:layout_marginTop="30dp"
+        android:textColor="#ffffff"
+        />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/filteredName"
+        android:textColor="#ffffff"
+        android:text=""
+        android:textSize="20sp"
+        />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/filteredNameList"
+        android:background="#5c5c5c"
+        android:contextClickable="true"
+        android:footerDividersEnabled="true" />
+
+</RelativeLayout>
