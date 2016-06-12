@@ -41,7 +41,8 @@ import java.util.List;
 /**
  * Created by Zsombor on 2016.03.27..
  */
-public class EventFilters extends AppCompatActivity{
+public class EventFilters extends AppCompatActivity
+        implements FilterDateFrag.getDateFromFrag, FilterDistanceFrag.getDistanceFromFrag, FilterPlaceFrag.getPlaceFromFrag{
     Date selectedDate = new Date();
     int seekDistance = 20;
     int setDistance;
@@ -53,8 +54,26 @@ public class EventFilters extends AppCompatActivity{
     EditText filteredPlace;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private int[] tabIcons = {
+            R.mipmap.ic_my_location_white_24dp,
+            R.mipmap.ic_date_range_white_24dp,
+            R.mipmap.ic_place_white_24dp
+    };
 
+    @Override
+    public void getDateFromFrag(long fragDate) {
+        selectedDate.setTime(fragDate);
+    }
 
+    @Override
+    public void getDistanceFromFrag(int fragDistance) {
+        seekDistance = fragDistance;
+    }
+
+    @Override
+    public void getPlaceFromFrag(String fragPlace) {
+        selectedName = fragPlace;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,20 +86,15 @@ public class EventFilters extends AppCompatActivity{
         actionBar.setTitle(R.string.title_activity_calendar_view);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
 
-        //==================== Creating tabs here =================================================
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
-        //=========================================================================================
 
         ImageButton searchButton = (ImageButton) findViewById(R.id.searchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Get filter data from fragments
+
+
                 Intent parentIntent = new Intent(EventFilters.this, PartyKalauz.class);
                 parentIntent.putExtra("DATE", selectedDate.getTime());
                 parentIntent.putExtra("DISTANCE", seekDistance);
@@ -88,26 +102,20 @@ public class EventFilters extends AppCompatActivity{
                 startActivity(parentIntent);
             }
         });
-        listNames = (ListView) findViewById(R.id.filteredNameList);
-        listNames.setVisibility(listNames.INVISIBLE);
-        filteredPlace = (EditText) findViewById(R.id.filteredName);
-        listNames.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedName = (String) listNames.getItemAtPosition(position);
-                filteredPlace.setText(selectedName);
-                filteredPlace.setSelection(selectedName.length());
-                listNames.setVisibility(listNames.INVISIBLE);
-            }
-        });
+
+
 
     }
-
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+    }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new FilterDistanceFrag(), getString(R.string.layoutDistance));
-        adapter.addFragment(new FilterDateFrag(), getString(R.string.layoutDate));
-        adapter.addFragment(new FilterPlaceFrag(), getString(R.string.layoutPlace));
+        adapter.addFragment(new FilterDistanceFrag(), getString(R.string.layoutDistance), listNameItems, selectedName, selectedDate.getTime(), seekDistance);
+        adapter.addFragment(new FilterDateFrag(), getString(R.string.layoutDate), listNameItems, selectedName, selectedDate.getTime(), seekDistance);
+        adapter.addFragment(new FilterPlaceFrag(), getString(R.string.layoutPlace), listNameItems, selectedName, selectedDate.getTime(), seekDistance);
         viewPager.setAdapter(adapter);
     }
 
@@ -129,9 +137,15 @@ public class EventFilters extends AppCompatActivity{
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(Fragment fragment, String title, String[] listNameItemsI, String filteredNameI, long filteredDateI, int filteredDistanceI ) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
+            final Bundle args = new Bundle();
+            args.putStringArray("PLACES", listNameItemsI);
+            args.putString("NAME", filteredNameI);
+            args.putInt("DISTANCE", filteredDistanceI);
+
+            fragment.setArguments(args);
         }
 
         @Override
@@ -150,132 +164,19 @@ public class EventFilters extends AppCompatActivity{
         seekDistance = intent.getIntExtra("DISTANCE", 40);
         listNameItems = intent.getStringArrayExtra("PLACES");
         selectedName = intent.getStringExtra("NAME");
-        filteredPlace.setText(selectedName);
 
 
-        // When coming back from CalendarView or PartyKalauz the previously filtered distance should stay ==========
-        final EditText filteredEditDistance = (EditText) findViewById(R.id.filteredDistance);
-        filteredEditDistance.setText(String.valueOf(seekDistance));
-        final SeekBar filteredBarDistance = (SeekBar) findViewById(R.id.seekDistance);
-        filteredBarDistance.setProgress(seekDistance);
-        // =========================================================================================
+        //==================== Creating tabs here =================================================
 
-        TextView filteredDate = (TextView) findViewById(R.id.filteredDate);
-        //DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        filteredDate.setText(dateFormat.format(selectedDate));
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
-        /**
-         * When the user moves the seekDistance slide the value of filteredDistance (EditText) changes
-         * accordingly.
-         */
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        setupTabIcons();
 
-        filteredBarDistance.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                filteredEditDistance.setText(String.valueOf(progress));
-                //seekDistance = seekBarDistance.getProgress();
-                seekDistance = progress;
-            }
+        //=========================================================================================
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        /**
-         * When the user changes the value of filteredDistance (EditText) the seekDistance slide
-         * changes accordingly.
-         */
-
-        filteredEditDistance.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() == 0) {
-                    return;
-                }
-                int bar = Integer.valueOf(String.valueOf(s));
-                if (bar < 1 || s == null)
-                    bar = 1;
-
-                filteredBarDistance.setProgress(bar);
-                seekDistance = bar;
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filteredEditDistance.setSelection(String.valueOf(s).length());
-            }
-        });
-        /**
-         * Clicking the filteredDate (EditText) navigates the user to the CalendarActivity with
-         * the selected distance as an extra.
-         */
-        filteredDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent eventDateIntent = new Intent(context, CalendarActivity.class);
-                eventDateIntent.putExtra("DISTANCE", seekDistance);
-                eventDateIntent.putExtra("NAME", selectedName);
-                startActivity(eventDateIntent);
-
-            }
-        });
-
-        /**
-         * Writing into the filteredPlace (EditText) shows the user a dropdown list, that contain all
-         * places that start with the written letters.
-         */
-
-
-
-        filteredPlace.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence s, int start, int before, int count) {
-                listNames.setVisibility(listNames.VISIBLE);
-                //============= Filter and populate list of places =================================
-                final List<String> listNamesArray = new ArrayList<String>();
-
-                //=============== Array of all places coming from previous activity ================
-
-                for(int i=0; i<listNameItems.length-1; i++)
-                {
-                    if(listNameItems[i] != null){
-                        if (listNameItems[i].toLowerCase().contains(s))
-                            listNamesArray.add(listNameItems[i]);
-                    }
-                }
-
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                        context, R.layout.placelist, R.id.list_places, listNamesArray);
-                listNames.setAdapter(arrayAdapter);
-                //==================================================================================
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-
-        });
 
 
     }

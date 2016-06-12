@@ -13,6 +13,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.Settings;
@@ -134,12 +135,15 @@ public class PartyKalauz extends AppCompatActivity implements
 
 
         //============================ Start Location Functions ==================================
-        mRequestingLocationUpdates = false;
-        mLastUpdateTime = "";
-        buildGoogleApiClient();
-        createLocationRequest();
-        buildLocationSettingsRequest();
-        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
+            mRequestingLocationUpdates = false;
+            mLastUpdateTime = "";
+            buildGoogleApiClient();
+            createLocationRequest();
+            buildLocationSettingsRequest();
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
         //========================================================================================
         /**
          Clicking the Settings button (fab) sends the user to the Settings Activity, where he can
@@ -266,7 +270,7 @@ public class PartyKalauz extends AppCompatActivity implements
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                Toast.makeText(PartyKalauz.this, "Helyzetmeghatározás", Toast.LENGTH_SHORT).show(); //Explanation to the user
+                Toast.makeText(PartyKalauz.this, "Az alkalmazás működéséhez engedélyezni kell a pozíciót.", Toast.LENGTH_SHORT).show(); //Explanation to the user
                 ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_COARSE);
             } else {
                 //This is where we request the user the permission
@@ -380,6 +384,9 @@ public class PartyKalauz extends AppCompatActivity implements
             loadingCircle.setVisibility(loadingCircle.VISIBLE);
             list.setAdapter(null);
             populateListView();
+            noEventsText = (TextView) findViewById(R.id.noEventsText);
+            noEventsText.setText(R.string.no_event_notify);
+            noEventsText.setVisibility(noEventsText.INVISIBLE);
         } else
             super.onBackPressed();
 

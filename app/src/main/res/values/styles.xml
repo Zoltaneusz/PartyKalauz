@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/black_overlay</item>
+        <item name="colorPrimaryDark">@color/black_overlay</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -29,4 +29,13 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="TabLayoutStyle" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/TabLayoutText</item>
+        <item name="tabSelectedTextColor">@color/green</item>
+    </style>
+
+    <style name="TabLayoutText" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
 </resources>
