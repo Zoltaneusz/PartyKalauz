@@ -64,17 +64,24 @@ public class FilterDateFrag extends Fragment {
     public interface getDateFromFrag {
         public void getDateFromFrag(long fragDate);
     }
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
 
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            passData = (getDateFromFrag) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement getDateFromFrag");
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Activity eventFilterAct;
+
+        if (context instanceof Activity) {
+            eventFilterAct = (Activity) context;
+
+            // This makes sure that the container activity has implemented
+            // the callback interface. If not, it throws an exception
+            try {
+                passData = (getDateFromFrag) eventFilterAct;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(eventFilterAct.toString()
+                        + " must implement getDateFromFrag");
+            }
         }
     }
 
