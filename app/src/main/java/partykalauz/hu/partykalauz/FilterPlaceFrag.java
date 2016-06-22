@@ -29,6 +29,7 @@ public class FilterPlaceFrag extends Fragment {
     ListView listNames;
     EditText filteredPlace;
     getPlaceFromFrag passData;
+    ArrayList<String> allPlaces = new ArrayList<String>();
 
     public FilterPlaceFrag(){}
 
@@ -69,7 +70,8 @@ public class FilterPlaceFrag extends Fragment {
         Bundle args = getArguments();
         if(args != null)
         {
-            listNameItems = args.getStringArray("PLACES");
+            allPlaces = args.getStringArrayList("PLACES");
+            listNameItems = allPlaces.toArray(listNameItems);
             selectedName = args.getString("NAME");
         }
 

@@ -52,6 +52,7 @@ public class EventFilters extends AppCompatActivity
     String[] listNameItems = new String[maxEvents];
     ListView listNames;
     EditText filteredPlace;
+    ArrayList<String> allPlaces = new ArrayList<String>();
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private int[] tabIcons = {
@@ -104,35 +105,26 @@ public class EventFilters extends AppCompatActivity
         });
 
 
-        //==================== Creating tabs here =================================================
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        setupTabIcons();
-
-        //=========================================================================================
 
     }
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        tabLayout.post(new Runnable() {
+      /*  tabLayout.post(new Runnable() {
             @Override
             public void run() {
                 tabLayout.setupWithViewPager(viewPager);
             }
         });
-
+*/
     }
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new FilterDistanceFrag(), getString(R.string.layoutDistance), listNameItems, selectedName, selectedDate.getTime(), seekDistance);
-        adapter.addFragment(new FilterDateFrag(), getString(R.string.layoutDate), listNameItems, selectedName, selectedDate.getTime(), seekDistance);
-        adapter.addFragment(new FilterPlaceFrag(), getString(R.string.layoutPlace), listNameItems, selectedName, selectedDate.getTime(), seekDistance);
+        adapter.addFragment(new FilterDistanceFrag(), getString(R.string.layoutDistance), allPlaces, selectedName, selectedDate.getTime(), seekDistance);
+        adapter.addFragment(new FilterDateFrag(), getString(R.string.layoutDate), allPlaces, selectedName, selectedDate.getTime(), seekDistance);
+        adapter.addFragment(new FilterPlaceFrag(), getString(R.string.layoutPlace), allPlaces, selectedName, selectedDate.getTime(), seekDistance);
         viewPager.setAdapter(adapter);
     }
 
@@ -154,11 +146,11 @@ public class EventFilters extends AppCompatActivity
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title, String[] listNameItemsI, String filteredNameI, long filteredDateI, int filteredDistanceI ) {
+        public void addFragment(Fragment fragment, String title, ArrayList<String> listNameItemsI, String filteredNameI, long filteredDateI, int filteredDistanceI ) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
             final Bundle args = new Bundle();
-            args.putStringArray("PLACES", listNameItemsI);
+            args.putStringArrayList("PLACES", listNameItemsI);
             args.putString("NAME", filteredNameI);
             args.putInt("DISTANCE", filteredDistanceI);
 
@@ -179,10 +171,21 @@ public class EventFilters extends AppCompatActivity
         Intent intent = getIntent();
         selectedDate.setTime(intent.getLongExtra("DATE", new Date().getTime()));
         seekDistance = intent.getIntExtra("DISTANCE", 40);
-        listNameItems = intent.getStringArrayExtra("PLACES");
+        allPlaces = intent.getStringArrayListExtra("PLACES");
+        listNameItems = allPlaces.toArray(listNameItems);
         selectedName = intent.getStringExtra("NAME");
 
+        //==================== Creating tabs here =================================================
 
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        setupTabIcons();
+
+        //=========================================================================================
 
 
 

@@ -99,6 +99,8 @@ public class PartyKalauz extends AppCompatActivity implements
     ArrayList<String> allPlaces = new ArrayList<String>();
     Date selectedDate = new Date();
     TextView noEventsText;
+    Location currentLatLngLocation;
+    ParseGeoPoint currentLocation = new ParseGeoPoint();
     //================== Variables for location handling =============
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     protected Boolean mRequestingLocationUpdates;
@@ -163,8 +165,8 @@ public class PartyKalauz extends AppCompatActivity implements
                 eventFilterIntent.putExtra("DATE", selectedDate.getTime());
                 Collections.sort(allPlaces);
                 String[] allPlacesString = new String[allPlaces.size()];
-                allPlacesString = allPlaces.toArray(allPlacesString);
-                eventFilterIntent.putExtra("PLACES", allPlacesString);
+         //       allPlacesString = allPlaces.toArray(allPlacesString);
+                eventFilterIntent.putStringArrayListExtra("PLACES", allPlaces);
                 startActivity(eventFilterIntent);
             }
         });
@@ -261,36 +263,37 @@ public class PartyKalauz extends AppCompatActivity implements
 
         // Define the criteria how to select the location provider -> use
         // default
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        provider = locationManager.getBestProvider(criteria, true);
+
         //    locationManager.requestLocationUpdates(provider, 5000, 1000, (LocationListener) this);
-        int permissionCheck = ActivityCompat.checkSelfPermission(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionCheck = ActivityCompat.checkSelfPermission(PartyKalauz.this, Manifest.permission.ACCESS_COARSE_LOCATION);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(PartyKalauz.this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
                 Toast.makeText(PartyKalauz.this, "Az alkalmazás működéséhez engedélyezni kell a pozíciót.", Toast.LENGTH_SHORT).show(); //Explanation to the user
-                ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_COARSE);
+                ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_COARSE);
             } else {
                 //This is where we request the user the permission
-                ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_COARSE);
+                ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_COARSE);
             }
         } else {
-            ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_COARSE);
+            ActivityCompat.requestPermissions(PartyKalauz.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_COARSE);
             //     mapPermissionGiven = true;
         }
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+        provider = locationManager.getBestProvider(criteria, true);
         ParseGeoPoint currentLocation = new ParseGeoPoint();
 
-        Location currentLatLngLocation = locationManager.getLastKnownLocation(provider); // This sometimes crashes, when called with provider = gps
+        currentLatLngLocation = locationManager.getLastKnownLocation(provider); // This sometimes crashes, when called with provider = gps
         try {
             currentLocation.setLatitude(currentLatLngLocation.getLatitude());
             currentLocation.setLongitude(currentLatLngLocation.getLongitude());
         } catch (Exception e) {
 
-            currentLatLngLocation = locationManager.getLastKnownLocation(provider); // Network provider always works
-            currentLocation.setLatitude(mCurrentLocation.getLatitude());
-            currentLocation.setLongitude(mCurrentLocation.getLongitude());
+            currentLatLngLocation = locationManager.getLastKnownLocation("network"); // Network provider always works
+            currentLocation.setLatitude(currentLatLngLocation.getLatitude());
+            currentLocation.setLongitude(currentLatLngLocation.getLongitude());
         }
 
         //=======================================================================================
@@ -408,6 +411,10 @@ public class PartyKalauz extends AppCompatActivity implements
             case PERMISSION_COARSE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+         /*   currentLocation.setLatitude(mCurrentLocation.getLatitude());
+            currentLocation.setLongitude(mCurrentLocation.getLongitude());*/
+
                  //   Toast.makeText(PartyKalauz.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
                 } else {
                  //   Toast.makeText(PartyKalauz.this, "Permission Denied!", Toast.LENGTH_SHORT).show();

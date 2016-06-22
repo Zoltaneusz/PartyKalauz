@@ -16,24 +16,29 @@
             app:tabGravity="fill"
             android:fillViewport="false"
             android:theme="@style/TabLayoutStyle" />
+
+
+
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     </android.support.design.widget.AppBarLayout>
 
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/searchButton"
+        android:layout_gravity="bottom|center"
+        android:src="@mipmap/ic_check_circle_white_48dp"
+        style="@style/Base.Widget.AppCompat.ImageButton"
+        android:baseline="@dimen/abc_action_button_min_width_overflow_material"
+        android:cropToPadding="false"
+        android:background="@drawable/datecard"
+        android:paddingTop="0dp"
+        android:elevation="10dp" />
 
 
-    1    <ImageButton
-    android:layout_width="50dp"
-    android:layout_height="50dp"
-    android:id="@+id/searchButton"
-    android:layout_gravity="bottom|center"
-    android:layout_weight="0.07"
-    android:src="@mipmap/ic_check_circle_white_48dp"
-    style="@style/Base.Widget.AppCompat.ImageButton"
-    android:baseline="@dimen/abc_action_button_min_width_overflow_material"
-    android:cropToPadding="false"
-    android:background="@drawable/datecard" />
 </android.support.design.widget.CoordinatorLayout>
